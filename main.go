@@ -61,7 +61,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 			return fmt.Errorf("Unable to create topic %q for project %q: %s", topicID, projectID, err)
 		}
 
-		for _, subscriptionID := range subscriptions {
+		for _, subscription := range subscriptions {
 			subscriptionParts := strings.Split(subscription, "+")
 			subscriptionID := subscriptionParts[0]
 			pushEndpoint := subscriptionParts[1]
