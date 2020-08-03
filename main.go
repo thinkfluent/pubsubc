@@ -62,10 +62,21 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 		}
 
 		for _, subscriptionID := range subscriptions {
+			subscriptionParts := strings.Split(subscription, "+")
+			subscriptionID := subscriptionParts[0]
+			pushEndpoint := subscriptionParts[1]
 			debugf("    Creating subscription %q", subscriptionID)
-			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic})
-			if err != nil {
-				return fmt.Errorf("Unable to create subscription %q on topic %q for project %q: %s", subscriptionID, topicID, projectID, err)
+			if pushEndpoint != "" {
+				pushConfig := pubsub.PushConfig{Endpoint: "http://" + pushEndpoint}
+				_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig})
+				if err != nil {
+					return fmt.Errorf("Unable to create push subscription %q on topic %q for project %q using push endpoint %q: %s", subscriptionID, topicID, projectID, pushEndpoint, err)
+				}
+			} else {
+				_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic})
+				if err != nil {
+					return fmt.Errorf("Unable to create subscription %q on topic %q for project %q: %s", subscriptionID, topicID, projectID, err)
+				}
 			}
 		}
 	}
@@ -76,7 +87,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 func main() {
 	flag.Parse()
 	flag.Usage = func() {
-		fmt.Printf(`Usage: env PUBSUB_PROJECT1="project1,topic1,topic2:subscription1" %s`+"\n", os.Args[0])
+		fmt.Printf(`Usage: env PUBSUB_PROJECT1="project1,topic1,topic2:subscription1,topic3:subscription2+enpoint1" %s`+"\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 
