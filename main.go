@@ -68,7 +68,11 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 			debugf("    Creating subscription %q", subscriptionID)
 			if pushEndpoint != "" {
 				pushConfig := pubsub.PushConfig{Endpoint: "http://" + pushEndpoint}
-				_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig})
+				_, err = client.CreateSubscription(
+					ctx,
+					subscriptionID,
+					pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig, AckDeadline: 60}
+				)
 				if err != nil {
 					return fmt.Errorf("Unable to create push subscription %q on topic %q for project %q using push endpoint %q: %s", subscriptionID, topicID, projectID, pushEndpoint, err)
 				}

@@ -16,3 +16,4 @@ PUBSUB_PROJECT1=project-name,topic:push-subscription+endpoint
 
 ### TODO:
 - Push subscriptions currently only support HTTP; it would be good to support HTTP _and_ HTTPS
+- Push subscription Ack Deadline is explicitly set to 60s; should be configurable
