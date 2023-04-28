@@ -64,7 +64,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 		for _, subscription := range subscriptions {
 			subscriptionParts := strings.Split(subscription, "+")
 			subscriptionID := subscriptionParts[0]
-			if _, ok := subscriptionParts[1]; ok {
+			if len(subscriptionParts) > 1 {
 				pushEndpoint := strings.Replace(subscriptionParts[1], "|", ":", 1)
 				debugf("    Creating push subscription %q with target %q", subscriptionID, pushEndpoint)
 				pushConfig := pubsub.PushConfig{Endpoint: "http://" + pushEndpoint}
