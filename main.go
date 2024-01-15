@@ -61,7 +61,9 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 	if err != nil {
 		fatalf("Unable to create client to project %q: %s", projectID, err)
 	}
-	defer client.Close()
+	// No need to manually close the client (causes a netty error in the Pub/Sub emulator)
+	// defer client.Close()
+	
 
 	debugf("Client connected with project ID %q", projectID)
 
@@ -215,4 +217,5 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+	fmt.Printf("Found %d Pub/Sub configurations\n", configCount)
 }
