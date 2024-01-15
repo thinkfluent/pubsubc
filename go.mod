@@ -1,4 +1,4 @@
-module thinkfluent.co.uk/pubsubc
+module github.com/thinkfluent/pubsubc
 
 go 1.21.6
 
