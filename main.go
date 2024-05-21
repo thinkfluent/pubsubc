@@ -92,7 +92,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 			if len(subscriptionParts) > 1 {
 				pushEndpoint := strings.Replace(subscriptionParts[1], "|", ":", 1)
 				debugf("    Creating push subscription %q with target %q", subscriptionID, pushEndpoint)
-				pushConfig := pubsub.PushConfig{Endpoint: "http://" + pushEndpoint}
+				pushConfig := pubsub.PushConfig{Endpoint: pushEndpoint}
 				_, err = client.CreateSubscription(
 					ctx,
 					subscriptionID,
