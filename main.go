@@ -90,7 +90,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 			subscriptionParts := strings.Split(subscription, "+")
 			subscriptionID := subscriptionParts[0]
 			if len(subscriptionParts) > 1 {
-				pushEndpoint := strings.Replace(subscriptionParts[1], "|", ":", 1)
+				pushEndpoint := strings.Replace(subscriptionParts[1], "|", ":", 2)
 				if (!strings.HasPrefix(pushEndpoint, "http")) {
 					pushEndpoint = "http://" + pushEndpoint
 				}
