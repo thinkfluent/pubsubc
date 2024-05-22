@@ -23,9 +23,17 @@ PUBSUB_PROJECT2=project-two,topicA,topicB:subscriptionX:subscriptionY
 ### Push Subscriptions
 The subscription string can be used to create a push subscription by appending the push endpoint to it separated by a `+`.
 
-#### Example:
+#### Examples:
+**NOTE** We cannot use `:` in the URLs as it conflicts with the pre-existing topic delimiter. So we replace `|` with `:` for you. If you do not provide a protocol, we assume http.
+
 ```
 PUBSUB_PROJECT1=project-name,topic:push-subscription+endpoint
+```
+```
+PUBSUB_PROJECT1=project-name,topic:push-subscription+https|//endpoint/path
+```
+```
+PUBSUB_PROJECT1=project-name,topic:push-subscription+http|//endpoint|8080/path
 ```
 
 ## Docker Labels
