@@ -7,6 +7,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"strconv"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/docker/docker/api/types"
@@ -88,25 +90,38 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 
 		for _, subscription := range subscriptions {
 			subscriptionParts := strings.Split(subscription, "+")
-			subscriptionID := subscriptionParts[0]
+			subscriptionDefParts := strings.Split(subscriptionParts[0], "~")
+			subscriptionID := subscriptionDefParts[0]
+
+			// Custom ack deadline?
+			ackDeadline := 10
+			if len(subscriptionDefParts) > 1 {
+				ackDeadline, _ = strconv.Atoi(subscriptionDefParts[1])
+			}
+			ackDeadlineDuration := time.Duration(ackDeadline) * time.Second
+
 			if len(subscriptionParts) > 1 {
 				pushEndpoint := strings.Replace(subscriptionParts[1], "|", ":", 2)
 				if (!strings.HasPrefix(pushEndpoint, "http")) {
 					pushEndpoint = "http://" + pushEndpoint
 				}
-				debugf("    Creating push subscription %q with target %q", subscriptionID, pushEndpoint)
+				debugf("    Creating push subscription %q [%ds] with target %q", subscriptionID, ackDeadline, pushEndpoint)
 				pushConfig := pubsub.PushConfig{Endpoint: pushEndpoint}
 				_, err = client.CreateSubscription(
 					ctx,
 					subscriptionID,
-					pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig},
+					pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig, AckDeadline: ackDeadlineDuration},
 				)
 				if err != nil {
 					return fmt.Errorf("Unable to create push subscription %q on topic %q for project %q using push endpoint %q: %s", subscriptionID, topicID, projectID, pushEndpoint, err)
 				}
 			} else {
-				debugf("    Creating pull subscription %q", subscriptionID)
-				_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic})
+				debugf("    Creating pull subscription %q [%ds]", subscriptionID, ackDeadline)
+				_, err = client.CreateSubscription(
+					ctx, 
+					subscriptionID, 
+					pubsub.SubscriptionConfig{Topic: topic, AckDeadline: ackDeadlineDuration},
+				)
 				if err != nil {
 					return fmt.Errorf("Unable to create subscription %q on topic %q for project %q: %s", subscriptionID, topicID, projectID, err)
 				}
