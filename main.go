@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 )
 
@@ -75,7 +75,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 		topic := client.Topic(topicID)
 		exists, err := topic.Exists(ctx)
 		if err != nil {
-			return fmt.Errorf("Failed to check exisitence of topic %q for project %q: %s", topicID, projectID, err)
+			return fmt.Errorf("failed to check exisitence of topic %q for project %q: %s", topicID, projectID, err)
 		}
 
 		if exists {
@@ -84,7 +84,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 			debugf("  Creating topic %q", topicID)
 			topic, err = client.CreateTopic(ctx, topicID)
 			if err != nil {
-				return fmt.Errorf("Unable to create topic %q for project %q: %s", topicID, projectID, err)
+				return fmt.Errorf("unable to create topic %q for project %q: %s", topicID, projectID, err)
 			}
 		}
 
@@ -113,7 +113,7 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 					pubsub.SubscriptionConfig{Topic: topic, PushConfig: pushConfig, AckDeadline: ackDeadlineDuration},
 				)
 				if err != nil {
-					return fmt.Errorf("Unable to create push subscription %q on topic %q for project %q using push endpoint %q: %s", subscriptionID, topicID, projectID, pushEndpoint, err)
+					return fmt.Errorf("unable to create push subscription %q on topic %q for project %q using push endpoint %q: %s", subscriptionID, topicID, projectID, pushEndpoint, err)
 				}
 			} else {
 				debugf("    Creating pull subscription %q [%ds]", subscriptionID, ackDeadline)
@@ -139,7 +139,7 @@ func processDockerLabelConfig() {
 		return
 	}
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	containers, err := cli.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
 		if client.IsErrConnectionFailed(err) {
 			debugf("Unable to connect to Docker: %s", err.Error())
