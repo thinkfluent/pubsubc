@@ -36,6 +36,12 @@ PUBSUB_PROJECT1=project-name,topic:push-subscription+https|//endpoint/path
 PUBSUB_PROJECT1=project-name,topic:push-subscription+http|//endpoint|8080/path
 ```
 
+### Ack Deadlines
+Subscriptions can have their ack deadline set using `~<seconds>` syntax after the susbcription name, e.g.
+```
+PUBSUB_PROJECT1=project-name,topic1,topic2:subscription1~300:subscription2
+```
+
 ## Docker Labels
 When using this tool as part of a larger collection of applications, we support reading project/topic/subscription 
 configurations directly from the Docker daemon, using the labels of other containers.
@@ -66,7 +72,3 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
-
-### TODO:
-- Push subscriptions currently only support HTTP; it would be good to support HTTP _and_ HTTPS
-- Push subscription Ack Deadline is explicitly set to 60s; should be configurable
